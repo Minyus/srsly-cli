@@ -1,14 +1,13 @@
-from typing import Optional
-
 import srsly
-from .utils import upath
+
+from .utils import get_data_type, upath
 
 
 def srsly_convert(
-    read_type: str,
-    write_type: str,
     read_path: str,
     write_path: str = None,
+    read_type: str = None,
+    write_type: str = None,
     read_skip: bool = None,
     read_use_list: bool = None,
     write_indent: int = None,
@@ -20,10 +19,17 @@ def srsly_convert(
     write_sort_keys: bool = None,
 ):
     if write_path is None:
+        assert write_type, "Either write_path or write_type must be provided."
         write_path = read_path + "." + write_type
 
     read_path = upath(read_path)
     write_path = upath(write_path)
+
+    if read_type is None:
+        read_type = get_data_type(read_path)
+
+    if write_type is None:
+        write_type = get_data_type(write_path)
 
     read_func = getattr(srsly, "read_" + read_type)
     write_func = getattr(srsly, "write_" + write_type)
